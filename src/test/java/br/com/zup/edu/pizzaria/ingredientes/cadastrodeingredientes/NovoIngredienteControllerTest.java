@@ -16,9 +16,7 @@ import java.math.BigDecimal;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -48,14 +46,58 @@ class NovoIngredienteControllerTest {
     }
 
     @Test
-    void deveRetornar400CasoIngredienteRepetido() {
+    void deveRetornar400CasoIngredienteRepetido() throws Exception {
 
         Ingrediente ingrediente = new Ingrediente(
-                "Queijo muçarela",
+                "Queijo provolone",
                 200,
                 new BigDecimal("2.0"));
 
-        NovoIngredienteRequest body = new NovoIngredienteRequest("Queijo muçarela", new BigDecimal("2.0"), 200);
+        ingredienteRepository.save(ingrediente);
+
+        NovoIngredienteRequest body = new NovoIngredienteRequest("Queijo provolone", new BigDecimal("2.0"), 200);
+        MockHttpServletRequestBuilder request = post("/api/ingredientes")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(body));
+
+        mvc.perform(request)
+                .andDo(print())
+                .andExpect(status().is4xxClientError());
+
+    }
+
+    @Test
+    void deveRetornar400CasoIngredienteTenhaNomeNulo() throws Exception {
+
+        NovoIngredienteRequest body = new NovoIngredienteRequest(null, new BigDecimal("2.0"), 200);
+        MockHttpServletRequestBuilder request = post("/api/ingredientes")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(body));
+
+        mvc.perform(request)
+                .andDo(print())
+                .andExpect(status().is4xxClientError());
+
+    }
+
+    @Test
+    void deveRetornar400CasoIngredienteTenhaQuantidadeNegativa() throws Exception {
+
+        NovoIngredienteRequest body = new NovoIngredienteRequest("Queijo prato", new BigDecimal("2.0"), -200);
+        MockHttpServletRequestBuilder request = post("/api/ingredientes")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(body));
+
+        mvc.perform(request)
+                .andDo(print())
+                .andExpect(status().is4xxClientError());
+
+    }
+
+    @Test
+    void deveRetornar400CasoIngredienteTenhaPrecoNegativo() throws Exception {
+
+        NovoIngredienteRequest body = new NovoIngredienteRequest("Queijo gorgonzola", new BigDecimal("-2.0"), 200);
         MockHttpServletRequestBuilder request = post("/api/ingredientes")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(body));
