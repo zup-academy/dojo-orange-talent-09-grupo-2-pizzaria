@@ -2,6 +2,8 @@ package br.com.zup.edu.pizzaria.pizzas.cadastropizza;
 
 import br.com.zup.edu.pizzaria.ingredientes.Ingrediente;
 import br.com.zup.edu.pizzaria.ingredientes.IngredienteRepository;
+import br.com.zup.edu.pizzaria.pizzas.Pizza;
+import br.com.zup.edu.pizzaria.pizzas.PizzaRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,6 +38,9 @@ class NovaPizzaControllerTest {
     private IngredienteRepository ingredienteRepository;
 
     @Autowired
+    private PizzaRepository pizzaRepository;
+
+    @Autowired
     private MockMvc mvc;
 
     @BeforeEach
@@ -59,5 +64,39 @@ class NovaPizzaControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"))
                 .andExpect(redirectedUrlPattern("/api/pizzas/{id}"));
+    }
+
+    @Test
+    void deveRetornar400CasoSaborRepetido() throws Exception {
+
+        Pizza pizzaParmesao = new Pizza(
+                "Parmesao",
+                Arrays.asList(ingredientes.get(1),ingredientes.get(2))
+        );
+        pizzaRepository.save(pizzaParmesao);
+
+        NovaPizzaRequest body = new NovaPizzaRequest("Parmesao",List.of(1L,2L));
+        MockHttpServletRequestBuilder request = post("/api/pizzas")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(body));
+
+        mvc.perform(request)
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+
+    }
+
+    @Test
+    void deveRetornar400CasoIngredienteSejaNulo() throws Exception {
+
+        NovaPizzaRequest body = new NovaPizzaRequest("SemGosto",List.of());
+        MockHttpServletRequestBuilder request = post("/api/pizzas")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(body));
+
+        mvc.perform(request)
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+
     }
 }
