@@ -1,7 +1,5 @@
 package br.com.zup.edu.pizzaria.pedidos;
 
-import br.com.zup.edu.pizzaria.pizzas.Pizza;
-
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
