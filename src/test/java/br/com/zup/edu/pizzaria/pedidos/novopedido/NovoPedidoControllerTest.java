@@ -101,4 +101,19 @@ class NovoPedidoControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    void naoDeveCadastrarUmNovoPedidoComPizzaInexistenteERetornarStatus404() throws Exception {
+        EnderecoRequest enderecoRequest = new EnderecoRequest("Rua A","10","Sem Complemento","0580-030");
+        ItemRequest item1 = new ItemRequest(404L, TipoDeBorda.RECHEADA_CHEDDAR);
+        NovoPedidoRequest body = new NovoPedidoRequest(enderecoRequest, Arrays.asList(item1));
+        MockHttpServletRequestBuilder request = post("/api/pedidos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(body));
+        mvc.perform(request)
+                .andDo(print())
+                .andExpect(status().isNotFound());
+    }
+
+
+
 }

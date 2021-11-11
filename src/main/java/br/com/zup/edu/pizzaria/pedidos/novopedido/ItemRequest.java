@@ -6,6 +6,7 @@ import br.com.zup.edu.pizzaria.pedidos.TipoDeBorda;
 import br.com.zup.edu.pizzaria.pizzas.Pizza;
 import br.com.zup.edu.pizzaria.pizzas.PizzaRepository;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 
 public class ItemRequest {
@@ -21,9 +22,9 @@ public class ItemRequest {
 
     public Item paraItem(Pedido pedido, PizzaRepository repository) {
 
-        Optional<Pizza> possivelPizza = repository.findById(pizzaId);
+        Pizza possivelPizza = repository.findById(pizzaId).orElseThrow(EntityNotFoundException::new);
 
-        return new Item(pedido, borda, possivelPizza.get());
+        return new Item(pedido, borda, possivelPizza);
     }
 
     public Long getPizzaId() {
