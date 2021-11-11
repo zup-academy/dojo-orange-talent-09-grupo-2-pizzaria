@@ -29,4 +29,20 @@ public class EnderecoRequest {
 
         return new Endereco(rua, numero, complemento, cep);
     }
+
+    public String getRua() {
+        return rua;
+    }
+
+    public String getNumero() {
+        return numero;
+    }
+
+    public String getComplemento() {
+        return complemento;
+    }
+
+    public String getCep() {
+        return cep;
+    }
 }

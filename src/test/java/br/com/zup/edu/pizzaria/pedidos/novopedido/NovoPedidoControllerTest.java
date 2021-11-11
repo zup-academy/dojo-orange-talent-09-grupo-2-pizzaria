@@ -3,6 +3,7 @@ package br.com.zup.edu.pizzaria.pedidos.novopedido;
 import br.com.zup.edu.pizzaria.ingredientes.Ingrediente;
 import br.com.zup.edu.pizzaria.ingredientes.IngredienteRepository;
 import br.com.zup.edu.pizzaria.pedidos.Endereco;
+import br.com.zup.edu.pizzaria.pedidos.TipoDeBorda;
 import br.com.zup.edu.pizzaria.pizzas.Pizza;
 import br.com.zup.edu.pizzaria.pizzas.PizzaRepository;
 import br.com.zup.edu.pizzaria.pizzas.cadastropizza.NovaPizzaRequest;
@@ -58,11 +59,10 @@ class NovoPedidoControllerTest {
      */
     @Test
     void deveCadastrarUmNovoPedidoERetornarStatus201() throws Exception {
-        Endereco endereco = new Endereco("Rua A","10","Sem Complemento","0580-030");
-        ItemRequest item1 = new ItemRequest();
-        item1.paraItem();
-        NovoPedidoRequest body = new NovoPedidoRequest(endereco,);
-        MockHttpServletRequestBuilder request = post("/api/pizzas")
+        EnderecoRequest enderecoRequest = new EnderecoRequest("Rua A","10","Sem Complemento","0580-030");
+        ItemRequest item1 = new ItemRequest(pizza.getId(), TipoDeBorda.RECHEADA_CHEDDAR);
+        NovoPedidoRequest body = new NovoPedidoRequest(enderecoRequest, Arrays.asList(item1));
+        MockHttpServletRequestBuilder request = post("/api/pedidos")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(body));
 
@@ -70,7 +70,7 @@ class NovoPedidoControllerTest {
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"))
-                .andExpect(redirectedUrlPattern("/api/pizzas/{id}"));
+                .andExpect(redirectedUrlPattern("/api/pedidos/{id}"));
     }
 
 }

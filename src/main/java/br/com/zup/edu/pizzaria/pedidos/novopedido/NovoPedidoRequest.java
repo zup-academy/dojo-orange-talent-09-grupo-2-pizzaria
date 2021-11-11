@@ -14,13 +14,15 @@ public class NovoPedidoRequest {
 
     private List<ItemRequest> itens;
 
+    public NovoPedidoRequest() {
+    }
+
     @JsonCreator(mode = PROPERTIES)
     public NovoPedidoRequest(EnderecoRequest endereco,
                              List<ItemRequest> itens) {
         this.endereco = endereco;
         this.itens = itens;
     }
-
 
     public Pedido paraPedido(PizzaRepository repository) {
 
@@ -32,5 +34,13 @@ public class NovoPedidoRequest {
 
 
         return pedido;
+    }
+
+    public EnderecoRequest getEndereco() {
+        return endereco;
+    }
+
+    public List<ItemRequest> getItens() {
+        return itens;
     }
 }
