@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.net.URI;
 
 @RestController
@@ -27,7 +28,7 @@ public class NovoPedidoController {
 
 
     @PostMapping
-    public ResponseEntity<?> novoPedido(@RequestBody NovoPedidoRequest request) {
+    public ResponseEntity<?> novoPedido(@RequestBody @Valid NovoPedidoRequest request) {
 
         Pedido pedido = request.paraPedido(pizzaRepository);
 

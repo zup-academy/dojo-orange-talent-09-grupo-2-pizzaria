@@ -7,6 +7,7 @@ import br.com.zup.edu.pizzaria.pedidos.TipoDeBorda;
 import br.com.zup.edu.pizzaria.pizzas.Pizza;
 import br.com.zup.edu.pizzaria.pizzas.PizzaRepository;
 import br.com.zup.edu.pizzaria.pizzas.cadastropizza.NovaPizzaRequest;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -71,6 +72,33 @@ class NovoPedidoControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"))
                 .andExpect(redirectedUrlPattern("/api/pedidos/{id}"));
+    }
+
+    @Test
+    void naoDeveCadastrarUmNovoPedidoSemEnderecoERetornarStatus400() throws Exception {
+        ItemRequest item1 = new ItemRequest(pizza.getId(), TipoDeBorda.RECHEADA_CHEDDAR);
+        NovoPedidoRequest body = new NovoPedidoRequest(null, Arrays.asList(item1));
+        MockHttpServletRequestBuilder request = post("/api/pedidos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(body));
+
+        mvc.perform(request)
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void naoDeveCadastrarUmNovoPedidoSemItensERetornarStatus400() throws Exception {
+        EnderecoRequest enderecoRequest = new EnderecoRequest("Rua A","10","Sem Complemento","0580-030");
+        ItemRequest item1 = new ItemRequest(pizza.getId(), TipoDeBorda.RECHEADA_CHEDDAR);
+        NovoPedidoRequest body = new NovoPedidoRequest(enderecoRequest, Arrays.asList());
+        MockHttpServletRequestBuilder request = post("/api/pedidos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(body));
+
+        mvc.perform(request)
+                .andDo(print())
+                .andExpect(status().isBadRequest());
     }
 
 }
