@@ -5,6 +5,8 @@ import br.com.zup.edu.pizzaria.pedidos.Pedido;
 import br.com.zup.edu.pizzaria.pedidos.TipoDeBorda;
 import br.com.zup.edu.pizzaria.pizzas.Pizza;
 import br.com.zup.edu.pizzaria.pizzas.PizzaRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
@@ -22,7 +24,8 @@ public class ItemRequest {
 
     public Item paraItem(Pedido pedido, PizzaRepository repository) {
 
-        Pizza possivelPizza = repository.findById(pizzaId).orElseThrow(EntityNotFoundException::new);
+        Pizza possivelPizza = repository.findById(pizzaId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Pizza não encontrada"));
 
         return new Item(pedido, borda, possivelPizza);
     }

@@ -19,6 +19,7 @@ public class NovoPedidoRequest {
     @NotNull
     private List<ItemRequest> itens;
 
+    @Deprecated
     public NovoPedidoRequest() {
     }
 
